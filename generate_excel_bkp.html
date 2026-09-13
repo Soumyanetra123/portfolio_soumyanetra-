@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MIS Executive Dashboard Generator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #fafafa;
+            color: #262626;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: #ffffff;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            max-width: 450px;
+        }
+        h2 { margin-top: 0; color: #0095f6; }
+        p { color: #666; font-size: 0.9rem; margin-bottom: 1.5rem; }
+        button {
+            background-color: #0095f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover { background-color: #0074c7; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Generate Excel Dashboard</h2>
+        <p>Click below to download the cleaned, multi-sheet <strong>MIS_Executive_Dashboard_Sample.xlsx</strong> file directly to your computer.</p>
+        <button id="downloadBtn">📊 Download Excel File</button>
+    </div>
+
+    <!-- SheetJS for multi-sheet Excel generation -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script>
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            // Sheet 1: Raw Billing Data
+            const rawData = [
+                ["VisitID", "UHID", "Department", "VisitType", "InvoiceAmount", "PaymentStatus", "BillingDate"],
+                ["V1001", "P801", "Cardiology", "Emergency", 12500, "Paid", "2026-09-01"],
+                ["V1002", "P802", "Orthopedics", "OPD", 3500, "Paid", "2026-09-02"],
+                ["V1003", "P803", "General Medicine", "IPD", 45000, "Pending_Insurance", "2026-09-03"],
+                ["V1004", "P804", "Neurology", "Emergency", 28000, "Paid", "2026-09-03"],
+                ["V1005", "P805", "Cardiology", "OPD", 4200, "Paid", "2026-09-04"],
+                ["V1006", "P806", "Pediatrics", "OPD", 2100, "Paid", "2026-09-05"],
+                ["V1007", "P807", "Orthopedics", "IPD", 68000, "Pending_Insurance", "2026-09-06"],
+                ["V1008", "P808", "Gastroenterology", "Emergency", 19500, "Paid", "2026-09-07"],
+                ["V1009", "P809", "General Medicine", "OPD", 3800, "Paid", "2026-09-08"],
+                ["V1010", "P810", "Cardiology", "IPD", 85000, "Pending_Insurance", "2026-09-09"]
+            ];
+
+            // Sheet 2: Executive KPI Summary
+            const kpiSummary = [
+                ["Executive KPI Metrics", "Value"],
+                ["Total Gross Revenue", 271100],
+                ["Realized Revenue (Paid)", 73100],
+                ["Outstanding TPA (Pending)", 198000],
+                ["Total Patient Visits", 10],
+                ["Average Invoice Value", 27110]
+            ];
+
+            // Sheet 3: Cleaned Department Breakdown Report
+            const deptReport = [
+                ["Department", "Paid Revenue", "Pending TPA Revenue", "Total Revenue"],
+                ["Cardiology", 16700, 85000, 101700],
+                ["Orthopedics", 3500, 68000, 71500],
+                ["General Medicine", 3800, 45000, 48800],
+                ["Neurology", 28000, 0, 28000],
+                ["Gastroenterology", 19500, 0, 19500],
+                ["Pediatrics", 2100, 0, 2100]
+            ];
+
+            // Sheet 4: Visit Type Breakdown Report
+            const visitTypeReport = [
+                ["Visit Type", "Visit Count", "Total Revenue", "Avg Revenue per Visit"],
+                ["IPD", 3, 198000, 66000],
+                ["Emergency", 3, 60000, 20000],
+                ["OPD", 4, 13600, 3400]
+            ];
+
+            // Create Workbook
+            const wb = XLSX.utils.book_new();
+            
+            // Append Sheets
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rawData), "Raw_Data");
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(kpiSummary), "KPI_Executive_Summary");
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(deptReport), "Department_Revenue_Report");
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(visitTypeReport), "Visit_Type_Report");
+
+            // Save and Trigger Download
+            XLSX.writeFile(wb, "MIS_Executive_Dashboard_Sample.xlsx");
+        });
+    </script>
+</body>
+</html>

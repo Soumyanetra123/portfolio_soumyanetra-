@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soumyanetra Chakraborty | SQL Portfolio</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        pre {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1.25rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-top: 0.75rem;
+        }
+        .sql-keyword { color: #569cd6; font-weight: bold; }
+        .sql-function { color: #dcdcaa; }
+        .sql-comment { color: #6a9955; font-style: italic; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">Soumyanetra Chakraborty</div>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About & Experience</a></li>
+                <li><a href="projects.html" class="active">Projects</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container" style="max-width: 850px;">
+        <h2 class="section-title">SQL Query Samples & Scripts</h2>
+        <p style="margin-bottom: 1.5rem; color: var(--secondary);">
+            Real-world T-SQL multi-table joins, aggregations, and stored procedures designed for enterprise MIS reporting.
+        </p>
+
+        <div class="projects-list">
+            
+            <!-- Sample 1 -->
+            <div class="card">
+                <div class="item-title">1. Multi-Table Revenue & Department Aggregation</div>
+                <div class="project-tech">INNER JOIN | LEFT JOIN | GROUP BY | DATE Logic</div>
+                <p>Extracts monthly revenue breakdown by consolidating patient, visit, department, and billing records.</p>
+
+<pre><code><span class="sql-comment">-- Consolidate department billing totals for active inpatient visits</span>
+<span class="sql-keyword">SELECT</span> 
+    d.DepartmentName,
+    <span class="sql-function">COUNT</span>(<span class="sql-keyword">DISTINCT</span> v.VisitID) <span class="sql-keyword">AS</span> TotalVisits,
+    <span class="sql-function">SUM</span>(b.InvoiceAmount) <span class="sql-keyword">AS</span> TotalRevenue
+<span class="sql-keyword">FROM</span> Departments d
+<span class="sql-keyword">INNER JOIN</span> Visits v <span class="sql-keyword">ON</span> d.DepartmentID = v.DepartmentID
+<span class="sql-keyword">INNER JOIN</span> Billing b <span class="sql-keyword">ON</span> v.VisitID = b.VisitID
+<span class="sql-keyword">LEFT JOIN</span> Doctors doc <span class="sql-keyword">ON</span> v.DoctorID = doc.DoctorID
+<span class="sql-keyword">WHERE</span> b.BillingDate &gt;= <span class="sql-function">DATEADD</span>(month, -1, <span class="sql-function">GETDATE</span>())
+<span class="sql-keyword">GROUP BY</span> d.DepartmentName
+<span class="sql-keyword">ORDER BY</span> TotalRevenue <span class="sql-keyword">DESC</span>;</code></pre>
+            </div>
+
+            <!-- Sample 2 -->
+            <div class="card">
+                <div class="item-title">2. Visitor Scan Frequency Enforcement (Stored Procedure)</div>
+                <div class="project-tech">Stored Procedures | Conditional Logic | Subqueries</div>
+                <p>Enforces scanning limits per patient UHID prior to granting visitor clearance.</p>
+
+<pre><code><span class="sql-comment">-- Stored Procedure to validate daily scan allowances</span>
+<span class="sql-keyword">CREATE PROCEDURE</span> sp_CheckVisitorLimit
+    @UHID <span class="sql-keyword">VARCHAR</span>(20),
+    @WardType <span class="sql-keyword">VARCHAR</span>(20)
+<span class="sql-keyword">AS</span>
+<span class="sql-keyword">BEGIN</span>
+    <span class="sql-keyword">DECLARE</span> @ScanCount <span class="sql-keyword">INT</span>;
+    
+    <span class="sql-keyword">SELECT</span> @ScanCount = <span class="sql-function">COUNT</span>(*) 
+    <span class="sql-keyword">FROM</span> VisitorLogs 
+    <span class="sql-keyword">WHERE</span> UHID = @UHID 
+      <span class="sql-keyword">AND</span> <span class="sql-function">CAST</span>(ScanTime <span class="sql-keyword">AS DATE</span>) = <span class="sql-function">CAST</span>(<span class="sql-function">GETDATE</span>() <span class="sql-keyword">AS DATE</span>);
+
+    <span class="sql-keyword">IF</span> (@WardType = <span class="sql-string">'ICU'</span> <span class="sql-keyword">AND</span> @ScanCount &gt;= 2)
+        <span class="sql-keyword">RAISERROR</span>(<span class="sql-string">'ICU daily scan limit reached.'</span>, 16, 1);
+    <span class="sql-keyword">ELSE</span>
+        <span class="sql-keyword">SELECT</span> <span class="sql-string">'Access Granted'</span> <span class="sql-keyword">AS</span> Status;
+<span class="sql-keyword">END</span>;</code></pre>
+            </div>
+
+        </div>
+
+        <div style="margin-top: 2rem;">
+            <a href="projects.html" class="btn btn-outline">← Back to Projects</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Soumyanetra Chakraborty. All rights reserved.</p>
+    </footer>
+</body>
+</html>

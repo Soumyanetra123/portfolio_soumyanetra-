@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MIS Executive Dashboard Generator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #fafafa;
+            color: #262626;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: #ffffff;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            max-width: 480px;
+        }
+        h2 { margin-top: 0; color: #0095f6; }
+        p { color: #666; font-size: 0.9rem; margin-bottom: 1.5rem; }
+        button {
+            background-color: #0095f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover { background-color: #0074c7; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Generate KPI Executive Dashboard</h2>
+        <p>Click below to download <strong>MIS_Executive_Dashboard_Sample.xlsx</strong> with the <strong>Raw_Data</strong> and dynamic <strong>KPI_Executive_Summary</strong> sheets.</p>
+        <button id="downloadBtn">📊 Download Excel File</button>
+    </div>
+
+    <!-- SheetJS Library -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script>
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            
+            // Sheet 1: Raw Data Table
+            const rawData = [
+                ["VisitID", "UHID", "Department", "VisitType", "InvoiceAmount", "PaymentStatus", "BillingDate"],
+                ["V1001", "P801", "Cardiology", "Emergency", 12500, "Paid", "2026-09-01"],
+                ["V1002", "P802", "Orthopedics", "OPD", 3500, "Paid", "2026-09-02"],
+                ["V1003", "P803", "General Medicine", "IPD", 45000, "Pending_Insurance", "2026-09-03"],
+                ["V1004", "P804", "Neurology", "Emergency", 28000, "Paid", "2026-09-03"],
+                ["V1005", "P805", "Cardiology", "OPD", 4200, "Paid", "2026-09-04"],
+                ["V1006", "P806", "Pediatrics", "OPD", 2100, "Paid", "2026-09-05"],
+                ["V1007", "P807", "Orthopedics", "IPD", 68000, "Pending_Insurance", "2026-09-06"],
+                ["V1008", "P808", "Gastroenterology", "Emergency", 19500, "Paid", "2026-09-07"],
+                ["V1009", "P809", "General Medicine", "OPD", 3800, "Paid", "2026-09-08"],
+                ["V1010", "P810", "Cardiology", "IPD", 85000, "Pending_Insurance", "2026-09-09"]
+            ];
+
+            // Sheet 2: Executive KPI Summary with Dynamic Excel Formulas
+            const kpiSummary = [
+                ["Executive KPI Metrics", "Formula / Cell Target", "Value"],
+                ["Total Gross Revenue", "=SUM(Raw_Data!E2:E11)", { f: "SUM(Raw_Data!E2:E11)" }],
+                ["Realized Revenue (Paid)", '=SUMIF(Raw_Data!F2:F11, "Paid", Raw_Data!E2:E11)', { f: 'SUMIF(Raw_Data!F2:F11, "Paid", Raw_Data!E2:E11)' }],
+                ["Outstanding TPA (Pending)", '=SUMIF(Raw_Data!F2:F11, "Pending_Insurance", Raw_Data!E2:E11)', { f: 'SUMIF(Raw_Data!F2:F11, "Pending_Insurance", Raw_Data!E2:E11)' }],
+                ["Total Patient Visits", "=COUNTA(Raw_Data!A2:A11)", { f: "COUNTA(Raw_Data!A2:A11)" }],
+                ["Average Invoice Value", "=AVERAGE(Raw_Data!E2:E11)", { f: "AVERAGE(Raw_Data!E2:E11)" }]
+            ];
+
+            // Build Workbook
+            const wb = XLSX.utils.book_new();
+
+            // Append Raw Data & KPI Executive Summary
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rawData), "Raw_Data");
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(kpiSummary), "KPI_Executive_Summary");
+
+            // Save and trigger download
+            XLSX.writeFile(wb, "MIS_Executive_Dashboard_Sample.xlsx");
+        });
+    </script>
+</body>
+</html>
